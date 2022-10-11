@@ -1,0 +1,7 @@
+redis
+flask
+flask-swagger-ui
+fastapi
+uvicorn
+pymongo==3.12.0
+pandas

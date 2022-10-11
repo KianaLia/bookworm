@@ -1,0 +1,52 @@
+version: '3'
+services:
+
+  mongo:
+    image: mongo
+    restart: always
+  
+  data:
+    build:
+      context: .
+      dockerfile: data/Dockerfile
+    depends_on:
+      - mongo
+    volumes:
+      - './data:/data'
+    ports: 
+      - '50051:50051'
+
+  redis:
+    image: redis
+    restart: always
+
+  model:
+    build:
+      dockerfile: model/Dockerfile
+    volumes:
+      - './model:/model'
+      - './data:/model/data'
+    depends_on:
+      - redis
+
+  api:
+    build:
+      dockerfile: api/Dockerfile
+    volumes:
+      - './api:/api'
+      - './data:/api/data'
+    depends_on:
+      - model
+      - redis
+    ports:
+      - '5020:5020'
+    restart: always
+
+  test:
+    build:
+      dockerfile: test/Dockerfile
+    volumes:
+      - './test:/test'
+      - './data:/test/data'
+      - './model:/test/model'
+    # command: tail -F anything
